@@ -1,4 +1,4 @@
-use crate as pallet_template;
+use crate as pallet_uke;
 use frame_support::traits::{ConstU16, ConstU64, ConstU32};
 use frame_system as system;
 use sp_core::H256;
@@ -10,7 +10,6 @@ use sp_runtime::{
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
-// Configure a mock runtime to test the pallet.
 frame_support::construct_runtime!(
 	pub enum Test where
 		Block = Block,
@@ -18,7 +17,7 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system,
-		TemplateModule: pallet_template,
+		Uke: pallet_uke,
 	}
 );
 
@@ -49,10 +48,10 @@ impl system::Config for Test {
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
-impl pallet_template::Config for Test {
+impl pallet_uke::Config for Test {
 	type Event = Event;
-	type MaxUsernameLength = ConstU32<16>;
-	type MaxConvoIdLength = ConstU32<64>;
+	type MaxUsernameLength = ConstU32<8>;
+	type MaxConvoIdLength = ConstU32<8>;
 	type MaxMessageLength = ConstU32<140>;
 }
 

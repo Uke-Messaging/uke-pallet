@@ -1,13 +1,16 @@
 [package]
-name = "pallet-template"
+name = "pallet-uke"
 version = "4.0.0-dev"
-description = "FRAME pallet template for defining custom runtime logic."
-authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
+description = "FRAME pallet that allows for the propogation of users and messages in accordance to the Uke Protocol.  Based off of the substrate-node-template."
+authors = [
+	"Substrate DevHub <https://github.com/substrate-developer-hub>",
+	"Bader Youssef <https://github.com/CrackTheCode016>",
+]
 homepage = "https://substrate.io"
 edition = "2021"
-license = "Unlicense"
+license = "Apache 2.0"
 publish = false
-repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
+repository = "https://github.com/Uke-Messaging/uke-pallet"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]

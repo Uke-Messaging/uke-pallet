@@ -1,8 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://docs.substrate.io/reference/frame-pallets/>
 pub use pallet::*;
 
 #[cfg(test)]
@@ -112,12 +109,10 @@ pub mod pallet {
 
 	#[pallet::error]
 	pub enum Error<T> {
-		ExceedsLength,
+		UsernameExceedsLength,
+		InvalidConvoId,
 	}
 
-	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
-	// These functions materialize as "extrinsics", which are often compared to transactions.
-	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		/// Dispatch and store a signed message by a user, as well as starts a conversation.  By nature, if a conversation
@@ -139,7 +134,7 @@ pub mod pallet {
 			let sender = ensure_signed(origin)?;
 
 			let bounded_id: BoundedVec<u8, T::MaxConvoIdLength> =
-				convo_id.clone().try_into().map_err(|()| Error::<T>::ExceedsLength)?;
+				convo_id.clone().try_into().map_err(|()| Error::<T>::InvalidConvoId)?;
 
 			let mut conversation = <Conversations<T>>::get(&bounded_id);
 
@@ -177,7 +172,7 @@ pub mod pallet {
 		))]
 		pub fn register(origin: OriginFor<T>, name: Vec<u8>) -> DispatchResult {
 			let bound_name: BoundedVec<u8, T::MaxUsernameLength> =
-				name.clone().try_into().map_err(|()| Error::<T>::ExceedsLength)?;
+				name.clone().try_into().map_err(|()| Error::<T>::UsernameExceedsLength)?;
 			let sender = ensure_signed(origin)?;
 			let new_user: User<T> = User { account_id: sender.clone(), username: bound_name };
 			Self::deposit_event(Event::<T>::RegisteredUsername { user: sender.clone() });
