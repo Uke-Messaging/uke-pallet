@@ -1,4 +1,4 @@
-use crate as pallet_uke;
+use crate::{self as pallet_uke, weights::WeightInfo};
 use frame_support::traits::{ConstU16, ConstU64, ConstU32};
 use frame_system as system;
 use sp_core::H256;
@@ -50,6 +50,7 @@ impl system::Config for Test {
 
 impl pallet_uke::Config for Test {
 	type Event = Event;
+	type WeightInfo = ();
 	type MaxUsernameLength = ConstU32<8>;
 	type MaxConvoIdLength = ConstU32<8>;
 	type MaxMessageLength = ConstU32<140>;
