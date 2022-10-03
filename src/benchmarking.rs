@@ -6,11 +6,12 @@ use super::*;
 use crate::Pallet as Uke;
 use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_support::pallet_prelude::*;
-use frame_system::pallet_prelude::*;
 use frame_system::RawOrigin;
 use sp_std::prelude::*;
 
 benchmarks! {
+
+    // Benchmark `store_message` with a brand new conversation being started.
     store_message {
         let caller: T::AccountId = whitelisted_caller();
 
@@ -24,7 +25,7 @@ benchmarks! {
         assert_eq!(Conversations::<T>::get(bound_id).len(), 1);
     }
 
-
+    // Benchmark `register` by registering a completely new user.
     register {
         let caller: T::AccountId = whitelisted_caller();
         let username: Vec<u8> =  "badery".as_bytes().to_vec();

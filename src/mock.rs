@@ -1,4 +1,4 @@
-use crate::{self as pallet_uke, weights::WeightInfo};
+use crate::{self as pallet_uke};
 use frame_support::traits::{ConstU16, ConstU64, ConstU32};
 use frame_system as system;
 use sp_core::H256;
@@ -53,14 +53,9 @@ impl pallet_uke::Config for Test {
 	type WeightInfo = ();
 	type MaxUsernameLength = ConstU32<8>;
 	type MaxConvoIdLength = ConstU32<8>;
-	type MaxMessageLength = ConstU32<140>;
 }
 
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
-	system::GenesisConfig::default().build_storage::<Test>().unwrap().into()
-}
-
-pub fn test_message_storage() -> sp_io::TestExternalities {
 	system::GenesisConfig::default().build_storage::<Test>().unwrap().into()
 }
