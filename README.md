@@ -41,6 +41,14 @@ To build it, run:
 cargo build --release
 ```
 
+## Running tests via Docker
+
+It's possible to test / build the pallet via the provided `Dockerfile`.  
+```
+docker build -t uke .
+```
+
+
 ## Implementation & Usage
 
 To add this to an existing runtime, you may utilize the Substrate Node Template.
