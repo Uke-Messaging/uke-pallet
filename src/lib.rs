@@ -34,6 +34,8 @@
 //!
 //! - **Messages**: Defined as having a sender and receiver of a particular string of text.
 //!
+//! - **Convo ID**: A conversation id is how conversations are identified. It is the recipients and senders addresses hashed (right now, via SHA3-256), and is intended to be deterministic but unique.
+//!
 //! - **Usernames**: Usernames are simple UTF-8 strings assigned to Account IDs for the purpose of human-readable identification
 //! of on-chain addresses.
 //!

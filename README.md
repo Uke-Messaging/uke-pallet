@@ -1,6 +1,9 @@
 # Uke Protocol Pallet
+> :warning: This pallet is not ready for production, and is in the proof of concept stage.
 
 The Uke pallet implements a basic username and message storage system that adheres to the Uke Protocol.
+
+Each conversation is stored on the blockchain under an id, which is a hash of the recipient and sender's address to ensure uniqueness. 
 
 ## Overview
 
@@ -60,7 +63,7 @@ pallet-uke = { version = "4.0.0-dev", default-features = false, git = "https://g
 "pallet-uke/runtime-benchmarks",
 ```
 
-4. In `try-runtime `, add:
+4. In `try-runtime`, add:
 
 ```rust
 "pallet-uke/try-runtime",
@@ -112,7 +115,7 @@ mod benches {
 }
 ```
 
-You can then run the node as normal and utilize the pallet as needed.
+You can then run the node as normal and utilize the pallet as needed.  If you have any doubts or issues, feel free to look at the [`uke-node`](https://github.com/Uke-Messaging/uke-node) implementation for clarification.
 
 License: Apache 2.0
 
