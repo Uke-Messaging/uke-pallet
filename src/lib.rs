@@ -24,7 +24,7 @@
 //! users on a given Substrate chain.
 //!
 //! - Allows for the propagation and retrieval of messages through a given Substrate instance.
-//! - Allows for a username to be mapped / assigned to a given Account ID, the retrieved later.
+//! - Allows for a username to be mapped / assigned to a given Account ID, to be retrieved later.
 //!
 //! \## Terminology
 //!
