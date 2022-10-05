@@ -24,8 +24,7 @@ users on a given Substrate chain.
 
 - **Messages**: Defined as having a sender and receiver of a particular string of text.
 
-- **Usernames**: Usernames are simple UTF-8 strings assigned to Account IDs for the purpose of human-readable identification
-  of on-chain addresses.
+- **Usernames**: Usernames are simple UTF-8 strings assigned to Account IDs for the purpose of human-readable identification of on-chain addresses. (inspired by the [nicks pallet](https://github.com/paritytech/substrate/tree/master/frame/nicks))).
 
 ## Testing & building
 

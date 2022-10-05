@@ -264,6 +264,7 @@ pub mod pallet {
         /// Registers a new user.
         ///
         /// Assigns the specified username to the caller's account id.
+        /// Inspired by the nicks pallet: https://github.com/paritytech/substrate/tree/master/frame/nicks
         #[pallet::weight((
 			T::WeightInfo::register(),
 			Pays::No
