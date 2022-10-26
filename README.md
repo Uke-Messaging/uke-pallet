@@ -55,7 +55,7 @@ To add this to an existing runtime, you may utilize the Substrate Node Template.
 1.  Add the following in `runtime/Cargo.toml` under `[dependencies]`:
 
 ```rust
-pallet-uke = { version = "4.0.0-dev", default-features = false, git = "https://github.com/Uke-Messaging/uke-pallet.git", branch = "main" }
+pallet-uke = { version = "4.0.0-dev", default-features = false, git = "https://github.com/Uke-Messaging/uke-pallet.git", branch = "m1-delivery" }
 ```
 
 2. And in `std` in that same `Cargo.toml`, add:
@@ -86,7 +86,7 @@ pub use pallet_uke;
 ```rust
 // Implement the config
 impl pallet_uke::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type MaxUsernameLength = ConstU32<16>;
 	type MaxConvoIdLength = ConstU32<64>;
 	type WeightInfo = pallet_uke::weights::PalletWeight<Runtime>;

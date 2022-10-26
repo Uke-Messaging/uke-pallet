@@ -1,4 +1,4 @@
-use crate::{self as pallet_uke};
+use crate as pallet_uke;
 use frame_support::traits::{ConstU16, ConstU64, ConstU32};
 use frame_system as system;
 use sp_core::H256;
@@ -10,6 +10,7 @@ use sp_runtime::{
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
+// Configure a mock runtime to test the pallet.
 frame_support::construct_runtime!(
 	pub enum Test where
 		Block = Block,
@@ -26,8 +27,9 @@ impl system::Config for Test {
 	type BlockWeights = ();
 	type BlockLength = ();
 	type DbWeight = ();
-	type Origin = Origin;
-	type Call = Call;
+	type RuntimeOrigin = RuntimeOrigin;
+	type RuntimeCall = RuntimeCall;
+	type RuntimeEvent = RuntimeEvent;
 	type Index = u64;
 	type BlockNumber = u64;
 	type Hash = H256;
@@ -35,7 +37,6 @@ impl system::Config for Test {
 	type AccountId = u64;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Header = Header;
-	type Event = Event;
 	type BlockHashCount = ConstU64<250>;
 	type Version = ();
 	type PalletInfo = PalletInfo;
@@ -46,10 +47,11 @@ impl system::Config for Test {
 	type SS58Prefix = ConstU16<42>;
 	type OnSetCode = ();
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
+
 }
 
 impl pallet_uke::Config for Test {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type WeightInfo = ();
 	type MaxUsernameLength = ConstU32<8>;
 	type MaxConvoIdLength = ConstU32<8>;

@@ -89,7 +89,7 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         /// The max allowed length for a username.
         #[pallet::constant]
         type MaxUsernameLength: Get<u32>;
@@ -232,7 +232,7 @@ pub mod pallet {
                 let mut recipient_conversation_addrs = <ActiveConversations<T>>::get(&recipient);
 
                 sender_conversations_addrs.push(new_active_convo.clone());
-                recipient_conversation_addrs.push(new_active_convo.clone());
+                recipient_conversation_addrs.push(new_active_convo);
 
                 Self::deposit_event(Event::<T>::ConvoStarted {
                     sender: sender.clone(),
@@ -255,7 +255,7 @@ pub mod pallet {
             conversation.push(new_message);
 
             Self::deposit_event(Event::<T>::MessageSent {
-                sender: sender.clone(),
+                sender,
             });
             <Conversations<T>>::insert(&bounded_id, conversation);
             Ok(())
@@ -282,7 +282,7 @@ pub mod pallet {
             Self::deposit_event(Event::<T>::RegisteredUsername {
                 user: sender.clone(),
             });
-            <Usernames<T>>::insert(&sender.clone(), new_user);
+            <Usernames<T>>::insert(&sender, new_user);
             Ok(())
         }
     }
