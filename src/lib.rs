@@ -219,14 +219,12 @@ pub mod pallet {
             convo_id: Vec<u8>,
             recipient: T::AccountId,
             recipient_name: Vec<u8>,
-            initiator_name: Vec<u8>
+            initiator_name: Vec<u8>,
         ) -> DispatchResult {
             let sender = ensure_signed(origin)?;
-
-            let bounded_id: BoundedVec<u8, T::MaxConvoIdLength> = convo_id
-                .clone()
-                .try_into()
-                .map_err(|()| Error::<T>::InvalidConvoId)?;
+            let bounded_id: BoundedVec<u8, T::MaxConvoIdLength> =
+                BoundedVec::<u8, T::MaxConvoIdLength>::try_from(convo_id)
+                    .map_err(|_| Error::<T>::InvalidConvoId)?;
 
             if !<IsActiveConversation<T>>::get(&bounded_id) {
                 <IsActiveConversation<T>>::insert(&bounded_id, true);
@@ -278,10 +276,9 @@ pub mod pallet {
 			Pays::No
 		))]
         pub fn register(origin: OriginFor<T>, name: Vec<u8>) -> DispatchResult {
-            let bound_name: BoundedVec<u8, T::MaxUsernameLength> = name
-                .clone()
-                .try_into()
-                .map_err(|()| Error::<T>::UsernameExceedsLength)?;
+            let bound_name: BoundedVec<u8, T::MaxUsernameLength> =
+                BoundedVec::<u8, T::MaxUsernameLength>::try_from(name)
+                    .map_err(|_| Error::<T>::UsernameExceedsLength)?;
             let sender = ensure_signed(origin)?;
             let new_user: User<T> = User {
                 account_id: sender.clone(),
