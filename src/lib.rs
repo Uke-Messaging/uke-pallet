@@ -118,10 +118,14 @@ pub mod pallet {
     #[derive(Encode, Decode, Clone, PartialEq, TypeInfo)]
     #[scale_info(skip_type_params(T))]
     pub struct ActiveConversation<T: Config> {
-        /// The initiator of the conversation.
-        pub(super) initiator: T::AccountId,
+        /// The initiator (address) of the conversation.
+        pub(super) initiator_address: T::AccountId,
+        /// The initiator (address) of the conversation.
+        pub(super) initiator_name: Vec<u8>,
         /// The recipient, as specified by the initiator.
-        pub(super) recipient: T::AccountId,
+        pub(super) recipient_name: Vec<u8>,
+        /// The initiator (address) of the conversation.
+        pub(super) recipient_address: T::AccountId,
     }
 
     /// A conversation between two accounts that contains the initiator, recipient, and an array of messages.
@@ -214,6 +218,8 @@ pub mod pallet {
             time: i64,
             convo_id: Vec<u8>,
             recipient: T::AccountId,
+            recipient_name: Vec<u8>,
+            initiator_name: Vec<u8>
         ) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -224,10 +230,14 @@ pub mod pallet {
 
             if !<IsActiveConversation<T>>::get(&bounded_id) {
                 <IsActiveConversation<T>>::insert(&bounded_id, true);
+
                 let new_active_convo: ActiveConversation<T> = ActiveConversation {
-                    initiator: sender.clone(),
-                    recipient: recipient.clone(),
+                    initiator_address: sender.clone(),
+                    initiator_name,
+                    recipient_name,
+                    recipient_address: recipient.clone(),
                 };
+
                 let mut sender_conversations_addrs = <ActiveConversations<T>>::get(&sender);
                 let mut recipient_conversation_addrs = <ActiveConversations<T>>::get(&recipient);
 

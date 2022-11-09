@@ -9,7 +9,9 @@ fn store_message_should_work() {
             "yes".as_bytes().to_vec(),
             1,
             "abc123".as_bytes().to_vec(),
-            1
+            1,
+            "badery".as_bytes().to_vec(),
+            "badery2".as_bytes().to_vec(),
         ));
     });
 }
@@ -43,7 +45,9 @@ fn invalid_id_should_work() {
                 "yes".as_bytes().to_vec(),
                 1,
                 "12345678901".as_bytes().to_vec(),
-                1
+                1,
+                "badery".as_bytes().to_vec(),
+                "badery2".as_bytes().to_vec(),
             ),
             Error::<Test>::InvalidConvoId
         );
