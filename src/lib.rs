@@ -89,7 +89,7 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
-		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         /// The max allowed length for a username.
         #[pallet::constant]
         type MaxUsernameLength: Get<u32>;
@@ -174,7 +174,7 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn username)]
     pub type Usernames<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, User<T>, OptionQuery>;
+        StorageMap<_, Blake2_128Concat, BoundedVec<u8, T::MaxUsernameLength>, User<T>, OptionQuery>;
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -254,9 +254,7 @@ pub mod pallet {
 
             conversation.push(new_message);
 
-            Self::deposit_event(Event::<T>::MessageSent {
-                sender,
-            });
+            Self::deposit_event(Event::<T>::MessageSent { sender });
             <Conversations<T>>::insert(&bounded_id, conversation);
             Ok(())
         }
@@ -277,12 +275,12 @@ pub mod pallet {
             let sender = ensure_signed(origin)?;
             let new_user: User<T> = User {
                 account_id: sender.clone(),
-                username: bound_name,
+                username: bound_name.clone(),
             };
             Self::deposit_event(Event::<T>::RegisteredUsername {
                 user: sender.clone(),
             });
-            <Usernames<T>>::insert(&sender, new_user);
+            <Usernames<T>>::insert(bound_name, new_user);
             Ok(())
         }
     }
