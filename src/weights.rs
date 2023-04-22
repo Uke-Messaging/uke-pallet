@@ -45,26 +45,26 @@ impl<T: frame_system::Config> WeightInfo for PalletWeight<T> {
 	// Storage: Uke IsActiveConversation (r:1 w:1)
 	// Storage: Uke ActiveConversations (r:1 w:1)
 	fn store_message() -> Weight {
-		Weight::from_ref_time(38_000_000_u64)
+		Weight::from_parts(38_000_000_u64, 0u64)
 			.saturating_add(T::DbWeight::get().reads(3_u64))
 			.saturating_add(T::DbWeight::get().writes(3_u64))
 	}
 	// Storage: Uke Usernames (r:0 w:1)
 	fn register() -> Weight {
-		Weight::from_ref_time(21_000_000_u64)
+		Weight::from_parts(21_000_000_u64, 0u64)
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 }
 
 impl WeightInfo for () {
 	fn store_message() -> Weight {
-		Weight::from_ref_time(38_000_000_u64)
+		Weight::from_parts(38_000_000_u64, 0u64)
 			.saturating_add(RocksDbWeight::get().reads(3_u64))
 			.saturating_add(RocksDbWeight::get().writes(3_u64))
 	}
 	// Storage: Uke Usernames (r:0 w:1)
 	fn register() -> Weight {
-		Weight::from_ref_time(21_000_000_u64)
+		Weight::from_parts(21_000_000_u64, 0u64)
 			.saturating_add(RocksDbWeight::get().writes(1_u64))
 	}
 }

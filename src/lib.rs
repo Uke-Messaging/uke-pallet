@@ -81,7 +81,6 @@ pub mod pallet {
     use sp_std::prelude::*;
 
     #[pallet::pallet]
-    #[pallet::generate_store(pub(super) trait Store)]
     #[pallet::without_storage_info]
     pub struct Pallet<T>(_);
 
@@ -207,7 +206,8 @@ pub mod pallet {
         /// that can be retrieved later.
         ///
         /// Therefore, starting a new Conversation typically takes more chain resources, as it has extra mappings to write to.
-
+        
+        #[pallet::call_index(0)]
         #[pallet::weight((
 			T::WeightInfo::store_message(),
 			Pays::No
@@ -271,6 +271,7 @@ pub mod pallet {
         ///
         /// Assigns the specified username to the caller's account id.
         /// Inspired by the nicks pallet: https://github.com/paritytech/substrate/tree/master/frame/nicks
+        #[pallet::call_index(1)]
         #[pallet::weight((
 			T::WeightInfo::register(),
 			Pays::No
@@ -285,7 +286,7 @@ pub mod pallet {
                 username: bound_name.clone(),
             };
             Self::deposit_event(Event::<T>::RegisteredUsername {
-                user: sender.clone(),
+                user: sender,
             });
             <Usernames<T>>::insert(bound_name, new_user);
             Ok(())
