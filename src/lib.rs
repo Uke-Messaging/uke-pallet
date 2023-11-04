@@ -71,14 +71,17 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+pub mod types;
 pub mod weights;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use super::*;
     use crate::weights::WeightInfo;
-    use frame_support::pallet_prelude::*;
+    use frame_support::{pallet, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use sp_std::prelude::*;
+    use types::{ActiveConversation, Conversation, Message, User};
 
     #[pallet::pallet]
     #[pallet::without_storage_info]
@@ -92,62 +95,17 @@ pub mod pallet {
         /// The max allowed length for a username.
         #[pallet::constant]
         type MaxUsernameLength: Get<u32>;
+        /// The max amount of messages per user per conversation
+        #[pallet::constant]
+        type MaxMessageAmount: Get<u32>;
+        /// The max amount of conversations per user
+        #[pallet::constant]
+        type MaxActiveConversationAmount: Get<u32>;
         /// The max allowed length for a conversation ID.
         #[pallet::constant]
         type MaxConvoIdLength: Get<u32>;
         /// Information on runtime weights.
         type WeightInfo: WeightInfo;
-    }
-
-    /// A singluar message that defines the sender, recipient, UNIX timestamp, and the message content itself.
-    #[derive(Encode, Decode, Clone, PartialEq, TypeInfo)]
-    #[scale_info(skip_type_params(T))]
-    pub struct Message<T: Config> {
-        /// The sender of the message.
-        pub(super) sender: T::AccountId,
-        /// The recipient of the message.
-        pub(super) recipient: T::AccountId,
-        /// UNIX timestamp of when the message was sent.
-        pub(super) time: i64,
-        /// The message content as a byte array. No limit is placed on this for now, however this may change in the future.
-        pub(super) message: Vec<u8>,
-    }
-
-    /// An active conversation, with the initiator of the conversation and recipient specified.  
-    #[derive(Encode, Decode, Clone, PartialEq, TypeInfo)]
-    #[scale_info(skip_type_params(T))]
-    pub struct ActiveConversation<T: Config> {
-        /// The initiator (address) of the conversation.
-        pub(super) initiator_address: T::AccountId,
-        /// The initiator (address) of the conversation.
-        pub(super) initiator_name: Vec<u8>,
-        /// The recipient, as specified by the initiator.
-        pub(super) recipient_name: Vec<u8>,
-        /// The initiator (address) of the conversation.
-        pub(super) recipient_address: T::AccountId,
-    }
-
-    /// A conversation between two accounts that contains the initiator, recipient, and an array of messages.
-    #[derive(Encode, Decode, Clone, PartialEq, TypeInfo)]
-    #[scale_info(skip_type_params(T))]
-    pub struct Conversation<T: Config> {
-        /// The initiator of the conversation.
-        pub(super) sender: T::AccountId,
-        /// The recipient of the conversation.
-        pub(super) recipient: T::AccountId,
-        /// Array of messages between the initiator and recipient.
-        pub(super) msgs: Vec<Message<T>>,
-    }
-
-    /// Basic structure of how a Uke User looks like
-    /// Assocating an Account Id with a UTF-8 username (although we don't verify it here).
-    #[derive(Encode, Decode, Clone, PartialEq, TypeInfo)]
-    #[scale_info(skip_type_params(T))]
-    pub struct User<T: Config> {
-        /// Caller's account id.
-        pub(super) account_id: T::AccountId,
-        /// Username associated with specified account id.
-        pub(super) username: BoundedVec<u8, T::MaxUsernameLength>,
     }
 
     /// Conversations in storage, retrievable via the specified ID.
@@ -157,7 +115,7 @@ pub mod pallet {
         _,
         Twox64Concat,
         BoundedVec<u8, T::MaxConvoIdLength>,
-        Vec<Message<T>>,
+        BoundedVec<Message<T>, T::MaxMessageAmount>,
         ValueQuery,
     >;
 
@@ -170,8 +128,13 @@ pub mod pallet {
     /// Mapping of active conversations a user is participating in.
     #[pallet::storage]
     #[pallet::getter(fn active)]
-    pub type ActiveConversations<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, Vec<ActiveConversation<T>>, ValueQuery>;
+    pub type ActiveConversations<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        T::AccountId,
+        BoundedVec<ActiveConversation<T>, T::MaxActiveConversationAmount>,
+        ValueQuery,
+    >;
 
     /// Registered account IDs as Users.
     #[pallet::storage]
@@ -197,6 +160,7 @@ pub mod pallet {
     pub enum Error<T> {
         UsernameExceedsLength,
         InvalidConvoId,
+        ConversationLimitReached,
     }
 
     #[pallet::call]
@@ -206,7 +170,6 @@ pub mod pallet {
         /// that can be retrieved later.
         ///
         /// Therefore, starting a new Conversation typically takes more chain resources, as it has extra mappings to write to.
-        
         #[pallet::call_index(0)]
         #[pallet::weight((
 			T::WeightInfo::store_message(),
@@ -215,7 +178,7 @@ pub mod pallet {
         pub fn store_message(
             origin: OriginFor<T>,
             message: Vec<u8>,
-            time: i64,
+            time: u64,
             convo_id: Vec<u8>,
             recipient: T::AccountId,
             recipient_name: Vec<u8>,
@@ -239,8 +202,8 @@ pub mod pallet {
                 let mut sender_conversations_addrs = <ActiveConversations<T>>::get(&sender);
                 let mut recipient_conversation_addrs = <ActiveConversations<T>>::get(&recipient);
 
-                sender_conversations_addrs.push(new_active_convo.clone());
-                recipient_conversation_addrs.push(new_active_convo);
+                sender_conversations_addrs.try_push(new_active_convo.clone()).map_err(|_| Error::<T>::ConversationLimitReached)?;
+                recipient_conversation_addrs.try_push(new_active_convo).map_err(|_| Error::<T>::ConversationLimitReached)?;
 
                 Self::deposit_event(Event::<T>::ConvoStarted {
                     sender: sender.clone(),
@@ -259,8 +222,9 @@ pub mod pallet {
                 time,
                 message,
             };
-
-            conversation.push(new_message);
+            
+            // TODO: WRAP MESSAGES AROUND
+            conversation.try_push(new_message).map_err(|_| Error::<T>::ConversationLimitReached)?;
 
             Self::deposit_event(Event::<T>::MessageSent { sender });
             <Conversations<T>>::insert(&bounded_id, conversation);
@@ -285,10 +249,17 @@ pub mod pallet {
                 account_id: sender.clone(),
                 username: bound_name.clone(),
             };
-            Self::deposit_event(Event::<T>::RegisteredUsername {
-                user: sender,
-            });
+            Self::deposit_event(Event::<T>::RegisteredUsername { user: sender });
             <Usernames<T>>::insert(bound_name, new_user);
+            Ok(())
+        }
+
+        #[pallet::call_index(2)]
+        #[pallet::weight((
+			T::WeightInfo::register(),
+			Pays::No
+		))]
+        pub fn start_conversation(origin: OriginFor<T>, recipient: T::AccountId) -> DispatchResult {
             Ok(())
         }
     }
