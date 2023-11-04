@@ -2,7 +2,7 @@ use codec::{Encode, Decode};
 use scale_info::TypeInfo;
 use frame_support::sp_runtime::BoundedVec;
 use frame_system::Config as FrameConfig;
-use crate::Config;
+use crate::{Config, Pallet};
  
  /// A singluar message that defines the sender, recipient, UNIX timestamp, and the message content itself.
  #[derive(Encode, Decode, Clone, PartialEq, TypeInfo)]

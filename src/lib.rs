@@ -71,6 +71,7 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+pub mod pallet_ext;
 pub mod types;
 pub mod weights;
 
@@ -78,10 +79,10 @@ pub mod weights;
 pub mod pallet {
     use super::*;
     use crate::weights::WeightInfo;
-    use frame_support::{pallet, pallet_prelude::*};
+    use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
     use sp_std::prelude::*;
-    use types::{ActiveConversation, Conversation, Message, User};
+    use types::{ActiveConversation, Message, User};
 
     #[pallet::pallet]
     #[pallet::without_storage_info]
@@ -241,6 +242,7 @@ pub mod pallet {
 			Pays::No
 		))]
         pub fn register(origin: OriginFor<T>, name: Vec<u8>) -> DispatchResult {
+            Self::foo();
             let bound_name: BoundedVec<u8, T::MaxUsernameLength> =
                 BoundedVec::<u8, T::MaxUsernameLength>::try_from(name)
                     .map_err(|_| Error::<T>::UsernameExceedsLength)?;
@@ -259,7 +261,7 @@ pub mod pallet {
 			T::WeightInfo::register(),
 			Pays::No
 		))]
-        pub fn start_conversation(origin: OriginFor<T>, recipient: T::AccountId) -> DispatchResult {
+        pub fn start_conversation(_origin: OriginFor<T>, _recipient: T::AccountId) -> DispatchResult {
             Ok(())
         }
     }
